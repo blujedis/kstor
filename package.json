@@ -1,6 +1,6 @@
 {
   "name": "kstor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple key value storage.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

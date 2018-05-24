@@ -12,5 +12,6 @@
   "preserveConstEnums": "true",
   "stripInternal": "true",
   "suppressExcessPropertyErrors": "true",
-  "suppressImplicitAnyIndexErrors": "true"
+  "suppressImplicitAnyIndexErrors": "true",
+  "exclude": "**/*+(e2e|spec|debug).ts"
 }
