@@ -29,6 +29,8 @@ class KStor extends events_1.EventEmitter {
     constructor(name, defaults, options) {
         super();
         this._cache = {}; // cached local top level data.
+        this._pkg = {}; // the package.json file.
+        this._cwd = process.cwd(); // the current working directory.
         if (chek_1.isPlainObject(name)) {
             options = name;
             name = undefined;
@@ -37,6 +39,12 @@ class KStor extends events_1.EventEmitter {
         if (name)
             options.name = name;
         this.options = Object.assign({}, DEFAULTS, options);
+        // Read package.json.
+        chek_1.tryWrap(() => {
+            this._pkg = JSON.parse(graceful_fs_1.readFileSync(path_1.resolve(this._cwd, 'package.json')).toString());
+        })({
+            name: path_1.basename(this._cwd)
+        });
         this.path = this.getPath(this.options);
         process.on('exit', this.exitHandler.bind(this, 'exit'));
         process.on('uncaughtException', this.exitHandler.bind(this, 'error'));
@@ -240,15 +248,28 @@ class KStor extends events_1.EventEmitter {
      */
     getPath(options) {
         options = options || {};
-        const isUserDir = chek_1.isValue(options.dir);
-        let name = options.name || path_1.basename(process.cwd());
+        let isUserDir = chek_1.isValue(options.dir);
+        let name = options.name || 'config.json';
+        let folder = this._pkg.name || path_1.basename(this._cwd);
+        let dir;
         if (!/\..+$/.test(name))
             name += '.json';
+        // Parse name check for dir.
+        const parsedName = path_1.parse(name);
+        // User defined filename contains dir.
+        if (parsedName.dir) {
+            name = parsedName.base;
+            folder = parsedName.dir;
+        }
+        if (options.dir && !parsedName.dir)
+            folder = '';
         // Ensure the directory
-        const dir = options.dir || os_1.homedir();
+        dir = dir || options.dir || os_1.homedir();
+        // Merge folder and name
+        name = path_1.join(folder, name);
         // Define store path for persistence.
         const path = !isUserDir ?
-            path_1.join(dir, '.kstor', 'configs', name) :
+            path_1.join(dir, '.kstor', name) :
             path_1.join(dir, name);
         return path;
     }
@@ -334,242 +355,6 @@ class KStor extends events_1.EventEmitter {
         this.db = cache;
         this.emit('deleted', this.ensureDefault(oldValue));
         return this;
-    }
-    // QUERY METHODS //
-    /**
-     * Query Value
-     * Validates if value matches query expression.
-     *
-     * @param operator the operator used to validate value.
-     * @param filter the comparator value used in validation.
-     * @param value the current value to evaluate.
-     */
-    queryValue(operator, filter, value) {
-        if (chek_1.isDate(value)) // convert dates to epoch for comparing.
-            value = value.getTime();
-        if (chek_1.isDate(filter))
-            filter = filter.getTime();
-        let valid;
-        switch (operator) {
-            case '$eq':
-                valid = value === filter;
-                break;
-            case '$ne':
-                valid = value !== filter;
-                break;
-            case '$gt':
-                valid = value > filter;
-                break;
-            case '$lt':
-                valid = value < filter;
-                break;
-            case '$gte':
-                valid = value >= filter;
-                break;
-            case '$lte':
-                valid = value <= filter;
-                break;
-            case '$in':
-                if (!Array.isArray(filter))
-                    filter = [filter];
-                if (chek_1.isString(value) || Array.isArray(value)) {
-                    if (chek_1.isString(value))
-                        value = value.split('');
-                    return chek_1.containsAny(value, filter);
-                }
-                break;
-            case '$nin':
-                if (!Array.isArray(filter))
-                    filter = [filter];
-                if (chek_1.isString(value) || Array.isArray(value)) {
-                    if (chek_1.isString(value))
-                        value = value.split('');
-                    return !chek_1.containsAny(value, filter);
-                }
-                break;
-            case '$not':
-                if (chek_1.isRegExp(filter))
-                    valid = !filter.test(value);
-                else
-                    valid = value !== filter;
-                break;
-            case '$exists':
-                if (filter === false)
-                    valid = !chek_1.isValue(value);
-                else
-                    valid = chek_1.isValue(value);
-                break;
-            case '$regexp':
-                if (!chek_1.isRegExp(filter))
-                    filter = new RegExp(filter, 'i'); // default to case insensitive.
-                valid = filter.test(value);
-                break;
-            case '$like':
-                if (!chek_1.isRegExp(filter))
-                    filter = new RegExp('.*' + filter + '.*', 'i');
-                valid = filter.test(value);
-                break;
-            default:
-                valid = false;
-        }
-        return valid;
-    }
-    /**
-     * Normalize Query
-     * Normalizes the query merging $and, $or.
-     *
-     * @param query
-     */
-    queryNormalize(query) {
-        const normalized = {};
-        if (!chek_1.isPlainObject(query))
-            throw new Error(`Normalize query expected type of object but got type ${typeof query}.`);
-        const mergeNormalized = (key, obj, logical) => {
-            if (!chek_1.isPlainObject(obj))
-                obj = { $eq: obj };
-            for (const k in obj) { // break out each operator to sep object.
-                const tmp = {
-                    operator: k,
-                    comparator: obj[k]
-                };
-                tmp.logical = logical || '$and';
-                if (!normalized[key])
-                    normalized[key] = [];
-                normalized[key].push(tmp);
-            }
-        };
-        const mergeNested = (obj) => {
-            for (const n in obj) {
-                if (!normalized[n])
-                    normalized[n] = obj[n];
-                else
-                    normalized[n] = normalized[n].concat(obj[n]);
-            }
-        };
-        // example $and: [ { price: { $gt: 100 } }, { price: { $lt: 300} } ]
-        const logicals = ['$and', '$or', '$nor'];
-        for (const k in query) {
-            const exps = query[k]; // [ { price: { $gt: 100 } }, ... ] or { $lt: 100 }
-            if (chek_1.contains(logicals, k)) { // is logical.
-                if (!Array.isArray(exps))
-                    throw new Error(`Logical query expected array but got type ${typeof exps}.`);
-                exps.forEach(exp => {
-                    if (exp.$and || exp.$or) { // is nest $and, $or
-                        mergeNested(this.queryNormalize(exp));
-                    }
-                    else {
-                        const prop = chek_1.keys(exp)[0]; // price
-                        let obj = exp[prop]; //  { $gt: 100 }
-                        mergeNormalized(prop, obj, k);
-                    }
-                });
-            }
-            else {
-                const obj = query[k];
-                if (chek_1.contains(logicals, k)) {
-                    const nested = this.queryNormalize(obj);
-                }
-                else {
-                    mergeNormalized(k, query[k]);
-                }
-            }
-        }
-        return normalized;
-    }
-    /**
-     * Query Row
-     * Queries a row in the collection.
-     *
-     * @param row the row to be inspected.
-     * @param query the expressions used to query the row.
-     */
-    queryRow(key, row, query) {
-        if (!chek_1.isValue(row) || chek_1.isEmpty(row))
-            return false;
-        query = this.queryNormalize(query);
-        let validAnd;
-        let validOr;
-        let validNor;
-        for (const prop in query) {
-            const arr = query[prop]; // [ { operator: $eq: comparator: 100 }, ... ];
-            for (const exp of arr) {
-                const isOr = exp.logical === '$or';
-                const isNor = exp.logical === '$nor';
-                const isAnd = exp.logical === '$and';
-                if (isOr && validOr) // already has match include in colleciton.
-                    continue;
-                if (isAnd && validAnd === false) // don't eval already failed exclude from collection.
-                    continue;
-                if (isNor && validNor) // already found valid nor match.
-                    continue;
-                const value = chek_1.get(row, prop);
-                let isMatch = this.queryValue(exp.operator, exp.comparator, value);
-                if (isOr)
-                    validOr = isMatch;
-                else if (isAnd)
-                    validAnd = isMatch;
-                else if (isNor)
-                    validNor = isMatch;
-            }
-        }
-        // if $and operators are valid (default) or an $or
-        // operator expression is true and no $nor matches
-        // are found then the row is included.
-        return (validAnd || validOr) && !validNor;
-    }
-    /**
-     * Query
-     * Allow for querying a nosql styled collection.
-     *
-     * @example
-     * store.query('users', { age: { $gte: 21 }, active: { $eq: true }})
-     *
-     * @param key top leve key of the desired collection.
-     * @param query object containing the query expression.
-     * @param skip skips the number of rows specified.
-     * @param take returns rows once found count matches number.
-     */
-    query(key, query, skip, take) {
-        let result = {};
-        let collection;
-        if (this.options.entrypoint) {
-            collection = (key === '*') ?
-                chek_1.get(this._cache, this.options.entrypoint) :
-                chek_1.get(this._cache, this.normalizeKey(key));
-        }
-        else {
-            collection = key === '*' ? this._cache : this.get(key);
-        }
-        if (!collection || !chek_1.isObject(collection)) // must be object.
-            return result;
-        let _skipped = 0;
-        let _taken = 0;
-        for (const k in collection) { // iterate each row.
-            if (chek_1.isValue(skip)) {
-                _skipped++;
-                if (_skipped <= skip) // skipping this row.
-                    continue;
-            }
-            const row = collection[k];
-            if (!chek_1.isPlainObject(query)) { // return all rows less skip/take.
-                const tmp = {};
-                tmp[k] = row;
-                Object.assign(result, tmp);
-                _taken++;
-            }
-            else {
-                const match = this.queryRow(k, row, query);
-                if (match) {
-                    const tmp = {};
-                    tmp[k] = row;
-                    Object.assign(result, tmp);
-                    _taken++;
-                }
-            }
-            if (chek_1.isValue(take) && _taken >= take) // max records taken exit.
-                break;
-        }
-        return result;
     }
     // UTILITIES //
     /**

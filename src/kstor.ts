@@ -6,7 +6,7 @@ import * as makedir from 'make-dir';
 import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { basename, parse, resolve, join, dirname } from 'path';
-import { get, set, del, has, isPlainObject, isBoolean, isString, isError, clone, isFunction, isValue, keys, containsAny, isObject, isBuffer, isUndefined, isRegExp, isEmpty, toArray, toMap, isDate, isSymbol, contains, extend } from 'chek';
+import { get, set, del, has, isPlainObject, isBoolean, isString, isError, clone, isFunction, isValue, keys, containsAny, isObject, isBuffer, isUndefined, isRegExp, isEmpty, toArray, toMap, isDate, isSymbol, contains, extend, tryWrap } from 'chek';
 import { IMap, IKStoreOptions, KStorIterable } from './';
 
 
@@ -35,14 +35,16 @@ const createObj = () => Object.create(null);
 
 export class KStor<C> extends EventEmitter {
 
-  private _loaded: boolean;    // indicates the db has loaded from file system.
-  private _dirty: boolean;     // indicates data is dirty and should be reloaded.
-  private _writing: boolean;   // Kstor is persisting data.
-  private _loaded_defaults: boolean;  // flag indicating if defaults have been set.
-  private _cache: any = {};    // cached local top level data.
+  private _loaded: boolean;                 // data has been initially loaded.
+  private _dirty: boolean;                  // dirty data should reload..
+  private _writing: boolean;                // Kstor is persisting data.
+  private _loaded_defaults: boolean;        // flag indicating if defaults have been set.
+  private _cache: any = {};                 // cached local top level data.
+  private _pkg: any = {};                   // the package.json file.
+  private _cwd: string = process.cwd();     // the current working directory.
 
-  path: string;                        // filepath for persisting.
-  options: IKStoreOptions;             // KStor options.
+  path: string;                             // filepath for persisting.
+  options: IKStoreOptions;                  // KStor options.
 
   constructor();
   constructor(options: IKStoreOptions, defaults?: IMap<any>);
@@ -60,6 +62,14 @@ export class KStor<C> extends EventEmitter {
       options.name = <string>name;
 
     this.options = Object.assign({}, DEFAULTS, options);
+
+    // Read package.json.
+    tryWrap(() => {
+      this._pkg = JSON.parse(readFileSync(resolve(this._cwd, 'package.json')).toString());
+    })({
+      name: basename(this._cwd)
+    });
+
     this.path = this.getPath(this.options);
 
     process.on('exit', this.exitHandler.bind(this, 'exit'));
@@ -322,25 +332,43 @@ export class KStor<C> extends EventEmitter {
    *
    * @param options options to be used for generating path.
    */
-  getPath(options?: IKStoreOptions) {
+  private getPath(options?: IKStoreOptions) {
 
     options = options || {};
 
-    const isUserDir = isValue(options.dir);
-    let name = options.name || basename(process.cwd());
+    let isUserDir = isValue(options.dir);
+    let name = options.name || 'config.json';
+    let folder = this._pkg.name || basename(this._cwd);
+    let dir;
 
     if (!/\..+$/.test(<string>name))
       name += '.json';
 
+    // Parse name check for dir.
+    const parsedName = parse(name);
+
+    // User defined filename contains dir.
+    if (parsedName.dir) {
+      name = parsedName.base;
+      folder = parsedName.dir;
+    }
+
+    if (options.dir && !parsedName.dir)
+      folder = '';
+
     // Ensure the directory
-    const dir = options.dir || homedir();
+    dir = dir || options.dir || homedir();
+
+    // Merge folder and name
+    name = join(folder, name);
 
     // Define store path for persistence.
     const path = !isUserDir ?
-      join(<string>dir, '.kstor', 'configs', <string>name) :
+      join(<string>dir, '.kstor', <string>name) :
       join(<string>dir, <string>name);
 
     return path;
+
   }
 
   /**
@@ -442,329 +470,6 @@ export class KStor<C> extends EventEmitter {
     this.db = cache;
     this.emit('deleted', this.ensureDefault(oldValue));
     return this;
-  }
-
-  // QUERY METHODS //
-
-  /**
-   * Query Value
-   * Validates if value matches query expression.
-   *
-   * @param operator the operator used to validate value.
-   * @param filter the comparator value used in validation.
-   * @param value the current value to evaluate.
-   */
-  private queryValue(operator: any, filter: any, value: any) {
-
-    if (isDate(value)) // convert dates to epoch for comparing.
-      value = value.getTime();
-
-    if (isDate(filter))
-      filter = filter.getTime();
-
-    let valid;
-
-    switch (operator) {
-
-      case '$eq':
-        valid = value === filter;
-        break;
-
-      case '$ne':
-        valid = value !== filter;
-        break;
-
-      case '$gt':
-        valid = value > filter;
-        break;
-
-      case '$lt':
-        valid = value < filter;
-        break;
-
-      case '$gte':
-        valid = value >= filter;
-        break;
-
-      case '$lte':
-        valid = value <= filter;
-        break;
-
-      case '$in':
-        if (!Array.isArray(filter))
-          filter = [filter];
-        if (isString(value) || Array.isArray(value)) {
-          if (isString(value))
-            value = value.split('');
-          return containsAny(value, filter);
-        }
-        break;
-
-      case '$nin':
-        if (!Array.isArray(filter))
-          filter = [filter];
-        if (isString(value) || Array.isArray(value)) {
-          if (isString(value))
-            value = value.split('');
-          return !containsAny(value, filter);
-        }
-        break;
-
-      case '$not':
-        if (isRegExp(filter))
-          valid = !filter.test(value);
-        else
-          valid = value !== filter;
-        break;
-
-      case '$exists':
-        if (filter === false)
-          valid = !isValue(value);
-        else
-          valid = isValue(value);
-        break;
-
-      case '$regexp':
-        if (!isRegExp(filter))
-          filter = new RegExp(filter, 'i'); // default to case insensitive.
-        valid = filter.test(value);
-        break;
-
-      case '$like':
-        if (!isRegExp(filter))
-          filter = new RegExp('.*' + filter + '.*', 'i');
-        valid = filter.test(value);
-        break;
-
-      default:
-        valid = false;
-
-    }
-
-    return valid;
-
-  }
-
-  /**
-   * Normalize Query
-   * Normalizes the query merging $and, $or.
-   *
-   * @param query
-   */
-  private queryNormalize(query: any) {
-
-    const normalized: any = {};
-
-    if (!isPlainObject(query))
-      throw new Error(`Normalize query expected type of object but got type ${typeof query}.`);
-
-    const mergeNormalized = (key, obj, logical?) => { // add normalized object.
-
-      if (!isPlainObject(obj))
-        obj = { $eq: obj };
-
-      for (const k in obj) { // break out each operator to sep object.
-
-        const tmp: any = {
-          operator: k,
-          comparator: obj[k]
-        };
-
-        tmp.logical = logical || '$and';
-
-        if (!normalized[key])
-          normalized[key] = [];
-
-        normalized[key].push(tmp);
-
-      }
-
-    };
-
-    const mergeNested = (obj) => { // helper method to merge into normalized.
-      for (const n in obj) {
-        if (!normalized[n])
-          normalized[n] = obj[n];
-        else
-          normalized[n] = normalized[n].concat(obj[n]);
-      }
-    };
-
-    // example $and: [ { price: { $gt: 100 } }, { price: { $lt: 300} } ]
-
-    const logicals = ['$and', '$or', '$nor'];
-
-    for (const k in query) {
-
-      const exps = query[k]; // [ { price: { $gt: 100 } }, ... ] or { $lt: 100 }
-
-      if (contains(logicals, k)) { // is logical.
-
-        if (!Array.isArray(exps))
-          throw new Error(`Logical query expected array but got type ${typeof exps}.`);
-
-        exps.forEach(exp => { // { price: { $gt: 100 } }
-
-          if (exp.$and || exp.$or) { // is nest $and, $or
-            mergeNested(this.queryNormalize(exp));
-          }
-
-          else {
-            const prop = keys(exp)[0]; // price
-            let obj = exp[prop]; //  { $gt: 100 }
-            mergeNormalized(prop, obj, k);
-
-          }
-
-        });
-
-      }
-
-      else {
-
-        const obj = query[k];
-        if (contains(logicals, k)) {
-          const nested = this.queryNormalize(obj);
-        }
-        else {
-          mergeNormalized(k, query[k]);
-        }
-
-      }
-
-    }
-
-    return normalized;
-
-  }
-
-  /**
-   * Query Row
-   * Queries a row in the collection.
-   *
-   * @param row the row to be inspected.
-   * @param query the expressions used to query the row.
-   */
-  private queryRow(key: string, row: IMap<any>, query: any) {
-
-    if (!isValue(row) || isEmpty(row))
-      return false;
-
-    query = this.queryNormalize(query);
-
-    let validAnd;
-    let validOr;
-    let validNor;
-
-
-    for (const prop in query) {
-
-      const arr = query[prop]; // [ { operator: $eq: comparator: 100 }, ... ];
-
-      for (const exp of arr) {
-
-        const isOr = exp.logical === '$or';
-        const isNor = exp.logical === '$nor';
-        const isAnd = exp.logical === '$and';
-
-        if (isOr && validOr) // already has match include in colleciton.
-          continue;
-
-        if (isAnd && validAnd === false) // don't eval already failed exclude from collection.
-          continue;
-
-        if (isNor && validNor) // already found valid nor match.
-          continue;
-
-        const value = get(row, prop);
-        let isMatch = this.queryValue(exp.operator, exp.comparator, value);
-
-        if (isOr) validOr = isMatch;
-        else if (isAnd) validAnd = isMatch;
-        else if (isNor) validNor = isMatch;
-
-      }
-
-    }
-
-    // if $and operators are valid (default) or an $or
-    // operator expression is true and no $nor matches
-    // are found then the row is included.
-    return (validAnd || validOr) && !validNor;
-
-  }
-
-  /**
-   * Query
-   * Allow for querying a nosql styled collection.
-   *
-   * @example
-   * store.query('users', { age: { $gte: 21 }, active: { $eq: true }})
-   *
-   * @param key top leve key of the desired collection.
-   * @param query object containing the query expression.
-   * @param skip skips the number of rows specified.
-   * @param take returns rows once found count matches number.
-   */
-  query<T>(key: string, query?: IMap<any>, skip?: number, take?: number): { [key: string]: T } {
-
-    let result: any = {};
-
-    let collection;
-
-    if (this.options.entrypoint) {
-      collection = (key === '*') ?
-        get(this._cache, this.options.entrypoint) :
-        get(this._cache, this.normalizeKey(key));
-    }
-    else {
-      collection = key === '*' ? this._cache : this.get(key);
-    }
-
-    if (!collection || !isObject(collection)) // must be object.
-      return result;
-
-    let _skipped = 0;
-    let _taken = 0;
-
-    for (const k in collection) { // iterate each row.
-
-      if (isValue(skip)) {
-        _skipped++;
-        if (_skipped <= skip) // skipping this row.
-          continue;
-      }
-
-      const row = collection[k];
-
-      if (!isPlainObject(query)) { // return all rows less skip/take.
-
-        const tmp = {};
-        tmp[k] = row;
-        Object.assign(result, tmp);
-        _taken++;
-
-      }
-      else {
-
-        const match = this.queryRow(k, row, query);
-
-        if (match) {
-          const tmp = {};
-          tmp[k] = row;
-          Object.assign(result, tmp);
-          _taken++;
-        }
-
-      }
-
-      if (isValue(take) && _taken >= take) // max records taken exit.
-        break;
-
-    }
-
-    return result;
-
   }
 
   // UTILITIES //

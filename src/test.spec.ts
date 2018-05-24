@@ -55,11 +55,13 @@ describe('KStor', () => {
   // TEST INIT //
 
   it('should get generated save paths.', () => {
-    assert.equal(store.getPath(options), '.tmp/test1.json');
-    assert.equal(store.getPath(), `${homedir()}/.kstor/configs/kstor.json`);
-    assert.equal(store.getPath({ name: 'custom' }), `${homedir()}/.kstor/configs/custom.json`);
-    assert.equal(store.getPath({ name: 'custom', dir: '/absolute/path' }), `/absolute/path/custom.json`);
-    assert.equal(store.getPath({ name: 'with-ext.rc', dir: '/absolute/path' }), `/absolute/path/with-ext.rc`);
+    assert.equal(store['getPath'](options), '.tmp/test1.json');
+    assert.equal(store['getPath'](), `${homedir()}/.kstor/kstor/config.json`);
+    assert.equal(store['getPath']({ name: 'custom' }), `${homedir()}/.kstor/kstor/custom.json`);
+    assert.equal(store['getPath']({ name: 'custom', dir: '/absolute/path' }), `/absolute/path/custom.json`);
+    assert.equal(store['getPath']({ name: 'with-ext.rc', dir: '/absolute/path' }), `/absolute/path/with-ext.rc`);
+    assert.equal(store['getPath']({ name: 'somedir/withdir.json', dir: '/absolute/path' }), `/absolute/path/somedir/withdir.json`);
+    assert.equal(store['getPath']({ name: 'somedir/withdir.json' }), `${homedir()}/.kstor/somedir/withdir.json`);
   });
 
   // STORE //
@@ -181,56 +183,56 @@ describe('KStor', () => {
 
   // QUERY TESTS //
 
-  // TODO: need to do more tests.
+  // TODO: Remove query feature until 1.2.0
 
-  it('should QUERY data from ALL rows in store.', () => {
-    const expected = {
-      blog1: { name: 'My Blog', date: new Date('1776-06-04T07:00:00.000Z') },
-      blog2: { name: 'Other Blog', date: new Date('1799-12-14T08:00:00.000Z') }
-    };
-    const result = store2.query('*');
-    assert.deepEqual(result, expected);
-  });
+  // it('should QUERY data from ALL rows in store.', () => {
+  //   const expected = {
+  //     blog1: { name: 'My Blog', date: new Date('1776-06-04T07:00:00.000Z') },
+  //     blog2: { name: 'Other Blog', date: new Date('1799-12-14T08:00:00.000Z') }
+  //   };
+  //   const result = store2.query('*');
+  //   assert.deepEqual(result, expected);
+  // });
 
-  it('should QUERY rows where DATE is greater than 01/01/1778.', () => {
-    const expected = {
-      blog2: { name: 'Other Blog', date: new Date('1799-12-14T08:00:00.000Z') }
-    };
-    const result = store2.query('*', { date: { $gt: new Date('01/01/1778') } });
-    assert.deepEqual(result, expected);
-  });
+  // it('should QUERY rows where DATE is greater than 01/01/1778.', () => {
+  //   const expected = {
+  //     blog2: { name: 'Other Blog', date: new Date('1799-12-14T08:00:00.000Z') }
+  //   };
+  //   const result = store2.query('*', { date: { $gt: new Date('01/01/1778') } });
+  //   assert.deepEqual(result, expected);
+  // });
 
-  it('should QUERY rows where NAME is LIKE "My".', () => {
-    const expected = {
-      blog1: { name: 'My Blog', date: new Date('1776-06-04T07:00:00.000Z') },
-    };
-    const result = store2.query('*', { name: { $like: 'my' } });
-    assert.deepEqual(result, expected);
-  });
+  // it('should QUERY rows where NAME is LIKE "My".', () => {
+  //   const expected = {
+  //     blog1: { name: 'My Blog', date: new Date('1776-06-04T07:00:00.000Z') },
+  //   };
+  //   const result = store2.query('*', { name: { $like: 'my' } });
+  //   assert.deepEqual(result, expected);
+  // });
 
-  it('should QUERY row at path BLOG2.', () => {
-    const expected = { name: 'Other Blog', date: new Date('1799-12-14T08:00:00.000Z') };
-    const result = store2.query('blog2');
-    assert.deepEqual(result, expected);
-  });
+  // it('should QUERY row at path BLOG2.', () => {
+  //   const expected = { name: 'Other Blog', date: new Date('1799-12-14T08:00:00.000Z') };
+  //   const result = store2.query('blog2');
+  //   assert.deepEqual(result, expected);
+  // });
 
-  it('should QUERY row where TAGS array contains "two".', () => {
-    const expected = {
-      blog1: { name: 'My Blog', date: new Date('1776-06-04T07:00:00.000Z'), tags: ['one', 'two', 'three'] },
-    };
-    store2.set('blog1.tags', ['one', 'two', 'three']);
-    const result = store2.query('*', { tags: { $in: ['two', 'four'] } });
-    assert.deepEqual(result, expected);
-  });
+  // it('should QUERY row where TAGS array contains "two".', () => {
+  //   const expected = {
+  //     blog1: { name: 'My Blog', date: new Date('1776-06-04T07:00:00.000Z'), tags: ['one', 'two', 'three'] },
+  //   };
+  //   store2.set('blog1.tags', ['one', 'two', 'three']);
+  //   const result = store2.query('*', { tags: { $in: ['two', 'four'] } });
+  //   assert.deepEqual(result, expected);
+  // });
 
-  it('should QUERY row where TAGS array does not contain "five".', () => {
-    const expected = {
-      blog1: { name: 'My Blog', date: new Date('1776-06-04T07:00:00.000Z'), tags: ['one', 'two', 'three'] },
-    };
-    store2.set('blog1.tags', ['one', 'two', 'three']);
-    const result = store2.query('*', { tags: { $nin: 'five' } });
-    assert.deepEqual(result, expected);
-  });
+  // it('should QUERY row where TAGS array does not contain "five".', () => {
+  //   const expected = {
+  //     blog1: { name: 'My Blog', date: new Date('1776-06-04T07:00:00.000Z'), tags: ['one', 'two', 'three'] },
+  //   };
+  //   store2.set('blog1.tags', ['one', 'two', 'three']);
+  //   const result = store2.query('*', { tags: { $nin: 'five' } });
+  //   assert.deepEqual(result, expected);
+  // });
 
   after((done) => {
     store.clear();

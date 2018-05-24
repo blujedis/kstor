@@ -65,7 +65,7 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<h1 id="kstor">Kstor</h1>
-				<p>Key value store for configs or simple local databases. Includes simple NoSQL type query capabilites as well as file encryption as a deterent to users modifying your config.</p>
+				<p>Key value store for configs or simple local databases. Includes file encryption as a deterent to users modifying your config.</p>
 				<h2 id="install">Install</h2>
 				<pre><code class="lang-sh">$ npm install kstor
 </code></pre>
@@ -107,6 +107,16 @@ store.set(<span class="hljs-string">'version'</span>, <span class="hljs-string">
 <span class="hljs-comment">// returns &gt; true</span>
 <span class="hljs-keyword">const</span> desc = store.has(<span class="hljs-string">'description'</span>);
 </code></pre>
+				<h2 id="storage-paths">Storage Paths</h2>
+				<p>The storage path for your config is very flexible. Here are the majority of examples you might encounter.</p>
+				<p><strong>APP_NAME</strong> denotes the directory name of your module or the package.json name of your module.
+				<strong>HOME</strong> denotes the home directory for your system. For example on mac /Users/YOUR_NAME.</p>
+				<p><strong>name:</strong> undefined <strong>dir:</strong> undefined <strong>result:</strong> /$HOME/.kstor/APP_NAME/config.json
+					<strong>name:</strong> custom <strong>dir:</strong> undefined <strong>result:</strong> /$HOME/.kstor/APP_NAME/custom.json
+					<strong>name:</strong> .customrc <strong>dir:</strong> undefined <strong>result:</strong> /$HOME/.kstor/APP_NAME/.customrc
+					<strong>name:</strong> mydir/conf.json <strong>dir:</strong> undefined <strong>result:</strong> /$HOME/.kstor/mydir/conf.json
+					<strong>name:</strong> conf.json <strong>dir:</strong> ./.configs <strong>result:</strong> ./.configs/conf.json (basically relative to local dir)
+				<strong>name:</strong> conf.json <strong>dir:</strong> /absolute/path <strong>result:</strong> /absolute/path/conf.json</p>
 				<h2 id="options">Options</h2>
 				<p>For most use cases you will not need to set any options. By default the <strong>&quot;name&quot;</strong> and <strong>&quot;dir&quot;</strong> options are set automatically. When &quot;dir&quot; is specified the default directory is overriden.</p>
 				<p>By default configs are saved to <strong>&quot;$HOME/kstor/configs&quot;</strong>. The file name will be your specified <strong>&quot;name&quot;</strong> option or the name of the directory from which you instantiated.</p>
@@ -208,17 +218,6 @@ store.set(<span class="hljs-string">'version'</span>, <span class="hljs-string">
 					<tr><td>Arguments</td><td>()</td></tr>
 					<tr><td>Returns</td><td>object</td></tr>
 				</table>
-				<h3 id="query">query</h3>
-				<p>Using NoSQL type query syntax (think MongoDB), queries the config returning matching records. This is useful if you wish to use KStor as a simple in memory database. Please be advised it&#39;s limited but works well for what it does. MongoDB syntax should work for most use cases but not all operators are implemented.</p>
-				<p><strong>example</strong></p>
-				<p>Get users that are less than 25 years old but over 21. Skip the first 10 you find and include a total of 5.</p>
-				<pre><code class="lang-ts"><span class="hljs-keyword">const</span> q = { age: { $lt: <span class="hljs-number">25</span>, $gt: <span class="hljs-number">21</span> }};
-<span class="hljs-keyword">const</span> result = store.query(<span class="hljs-string">'users'</span>, q, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>);
-</code></pre>
-				<table>
-					<tr><td>Arguments</td><td>(key: string, query?: object, skip?: number, take?: number)</td></tr>
-					<tr><td>Returns</td><td>object</td></tr>
-				</table>
 				<h3 id="db-get-">db (get)</h3>
 				<p>Gets the entire config using getter.</p>
 				<pre><code class="lang-ts"><span class="hljs-keyword">const</span> data = <span class="hljs-keyword">this</span>.db;
@@ -287,6 +286,8 @@ iterator.forEach(<span class="hljs-function"><span class="hljs-keyword">function
 					<tr><td>Getter</td><td></td></tr>
 					<tr><td>Returns</td><td>Iterable</td></tr>
 				</table>
+				<h2 id="docs">Docs</h2>
+				<p>See <a href="https://origin1tech.github.io/kstor/">https://origin1tech.github.io/kstor/</a></p>
 				<h2 id="change">Change</h2>
 				<p>See <a href="CHANGE.md">CHANGE.md</a></p>
 				<h2 id="license">License</h2>

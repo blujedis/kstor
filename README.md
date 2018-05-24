@@ -1,6 +1,6 @@
 # Kstor
 
-Key value store for configs or simple local databases. Includes simple NoSQL type query capabilites as well as file encryption as a deterent to users modifying your config.
+Key value store for configs or simple local databases. Includes file encryption as a deterent to users modifying your config.
 
 ## Install
 
@@ -49,6 +49,20 @@ const email = store.get('author.email');
 // returns > true
 const desc = store.has('description');
 ```
+
+## Storage Paths
+
+The storage path for your config is very flexible. Here are the majority of examples you might encounter.
+
+**APP_NAME** denotes the directory name of your module or the package.json name of your module.
+**HOME** denotes the home directory for your system. For example on mac /Users/YOUR_NAME.
+
+**name:** undefined **dir:** undefined **result:** /$HOME/.kstor/APP_NAME/config.json
+**name:** custom **dir:** undefined **result:** /$HOME/.kstor/APP_NAME/custom.json
+**name:** .customrc **dir:** undefined **result:** /$HOME/.kstor/APP_NAME/.customrc
+**name:** mydir/conf.json **dir:** undefined **result:** /$HOME/.kstor/mydir/conf.json
+**name:** conf.json **dir:** ./.configs **result:** ./.configs/conf.json (basically relative to local dir)
+**name:** conf.json **dir:** /absolute/path **result:** /absolute/path/conf.json
 
 ## Options
 
@@ -195,24 +209,6 @@ Creates and returns a clone of your config.
   <tr><td>Returns</td><td>object</td></tr>
 </table>
 
-### query
-
-Using NoSQL type query syntax (think MongoDB), queries the config returning matching records. This is useful if you wish to use KStor as a simple in memory database. Please be advised it's limited but works well for what it does. MongoDB syntax should work for most use cases but not all operators are implemented.
-
-**example**
-
-Get users that are less than 25 years old but over 21. Skip the first 10 you find and include a total of 5.
-
-```ts
-const q = { age: { $lt: 25, $gt: 21 }};
-const result = store.query('users', q, 10, 5);
-```
-
-<table>
-  <tr><td>Arguments</td><td>(key: string, query?: object, skip?: number, take?: number)</td></tr>
-  <tr><td>Returns</td><td>object</td></tr>
-</table>
-
 ### db (get)
 
 Gets the entire config using getter.
@@ -302,7 +298,9 @@ iterator.forEach(function(item) {
   <tr><td>Returns</td><td>Iterable</td></tr>
 </table>
 
+## Docs
 
+See [https://origin1tech.github.io/kstor/](https://origin1tech.github.io/kstor/)
 
 ## Change
 

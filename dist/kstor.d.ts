@@ -7,6 +7,8 @@ export declare class KStor<C> extends EventEmitter {
     private _writing;
     private _loaded_defaults;
     private _cache;
+    private _pkg;
+    private _cwd;
     path: string;
     options: IKStoreOptions;
     constructor();
@@ -82,7 +84,7 @@ export declare class KStor<C> extends EventEmitter {
      *
      * @param options options to be used for generating path.
      */
-    getPath(options?: IKStoreOptions): string;
+    private getPath(options?);
     /**
      * Defaults
      * Ensures defaults in store.
@@ -120,45 +122,6 @@ export declare class KStor<C> extends EventEmitter {
      * @param key the key to be removed.
      */
     del(key: string): this;
-    /**
-     * Query Value
-     * Validates if value matches query expression.
-     *
-     * @param operator the operator used to validate value.
-     * @param filter the comparator value used in validation.
-     * @param value the current value to evaluate.
-     */
-    private queryValue(operator, filter, value);
-    /**
-     * Normalize Query
-     * Normalizes the query merging $and, $or.
-     *
-     * @param query
-     */
-    private queryNormalize(query);
-    /**
-     * Query Row
-     * Queries a row in the collection.
-     *
-     * @param row the row to be inspected.
-     * @param query the expressions used to query the row.
-     */
-    private queryRow(key, row, query);
-    /**
-     * Query
-     * Allow for querying a nosql styled collection.
-     *
-     * @example
-     * store.query('users', { age: { $gte: 21 }, active: { $eq: true }})
-     *
-     * @param key top leve key of the desired collection.
-     * @param query object containing the query expression.
-     * @param skip skips the number of rows specified.
-     * @param take returns rows once found count matches number.
-     */
-    query<T>(key: string, query?: IMap<any>, skip?: number, take?: number): {
-        [key: string]: T;
-    };
     /**
      * Clear
      * Clears the store basically {}

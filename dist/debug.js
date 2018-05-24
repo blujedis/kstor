@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require("./");
 const options = {
-    name: '.queryrc',
-    dir: './.tmp',
+    name: 'mydir/conf.json',
+    // dir: './.tmp',
     // superkey: 'apps',
     // encryptionKey: 'james-comey-is-a-liar'
     // encryptionKey: 'eurmmruuemme7738mfmmfqwerxasfrml'
@@ -32,8 +32,5 @@ const store = new _1.KStor(options, defaults);
 //   ]
 // });
 // const result = store.query('blogs', { $and: [{ teams: { $gt: 30 } }, { teams: { $lt: 32 } }] });
-for (const k of store) {
-    console.log(k);
-}
 store.clear();
 //# sourceMappingURL=debug.js.map
