@@ -1,0 +1,398 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Kstor</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">Kstor</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> Kstor</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="kstor">Kstor</h1>
+				<p>Key value store for configs or simple local databases. Includes simple NoSQL type query capabilites as well as file encryption as a deterent to users modifying your config.</p>
+				<h2 id="install">Install</h2>
+				<pre><code class="lang-sh">$ npm install kstor
+</code></pre>
+				<h2 id="usage">Usage</h2>
+				<p>Using ES6</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">import</span> { KStor } <span class="hljs-keyword">from</span> <span class="hljs-string">'kstor'</span>;
+<span class="hljs-keyword">const</span> defaults = {
+  name: <span class="hljs-string">'app'</span>,
+  description: <span class="hljs-string">'My application description.'</span>,
+  version: <span class="hljs-string">'1.0.0'</span>,
+  keywords: [
+    <span class="hljs-string">'todos'</span>,
+    <span class="hljs-string">'notes'</span>,
+    <span class="hljs-string">'messages'</span>
+  ],
+  author: {
+    name: <span class="hljs-string">'Milton Waddams'</span>,
+    email: <span class="hljs-string">'mwaddams@mail.com'</span>
+  }
+};
+<span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> KStor(<span class="hljs-string">'myconfig'</span>, defaults);
+<span class="hljs-comment">// or new KStor({ /* options here */}, defaults);</span>
+
+<span class="hljs-comment">// Getting a value.</span>
+<span class="hljs-comment">// returns &gt; 'app'</span>
+<span class="hljs-keyword">const</span> name = store.get(<span class="hljs-string">'name'</span>);
+
+<span class="hljs-comment">// Setting a value.</span>
+store.set(<span class="hljs-string">'version'</span>, <span class="hljs-string">'1.0.1'</span>);
+
+<span class="hljs-comment">// Getting a nested value from indexed array.</span>
+<span class="hljs-comment">// returns &gt; 'notes'</span>
+<span class="hljs-keyword">const</span> keyword = store.get(<span class="hljs-string">'keywords[1]'</span>);
+
+<span class="hljs-comment">// Getting nested value from object.</span>
+<span class="hljs-keyword">const</span> email = store.get(<span class="hljs-string">'author.email'</span>);
+
+<span class="hljs-comment">// Check if has value.</span>
+<span class="hljs-comment">// returns &gt; true</span>
+<span class="hljs-keyword">const</span> desc = store.has(<span class="hljs-string">'description'</span>);
+</code></pre>
+				<p>Using ES5</p>
+				<pre><code class="lang-js"><span class="hljs-keyword">var</span> KStor = <span class="hljs-built_in">require</span>(<span class="hljs-string">'kstor'</span>).KStor;
+<span class="hljs-keyword">var</span> store = <span class="hljs-keyword">new</span> KStor(<span class="hljs-string">'myconfig'</span>, defaults); <span class="hljs-comment">// see defaults above.</span>
+
+<span class="hljs-comment">// For examples see above, same as ES6.</span>
+</code></pre>
+				<h2 id="options">Options</h2>
+				<p>For most use cases you will not need to set any options. By default the <strong>&quot;name&quot;</strong> and <strong>&quot;dir&quot;</strong> options are set automatically. When &quot;dir&quot; is specified the default directory is overriden.</p>
+				<p>By default configs are saved to <strong>&quot;$HOME/kstor/configs&quot;</strong>. The file name will be your specified <strong>&quot;name&quot;</strong> option or the name of the directory from which you instantiated.</p>
+				<h3 id="name">name</h3>
+				<p>Filename when not specified is named as <strong>your_directory_name.json</strong></p>
+				<table>
+					<tr><td>Type</td><td>String</td></tr>
+					<tr><td>Default</td><td>null</td></tr>
+				</table>
+				<h3 id="dir">dir</h3>
+				<p>Dir when not specified defaults to <strong>$HOME/kstor/configs</strong></p>
+				<table>
+					<tr><td>Type</td><td>String</td></tr>
+					<tr><td>Default</td><td>null</td></tr>
+				</table>
+				<h3 id="entrypoint">entrypoint</h3>
+				<p>When an entrypoint is specified the store is mapped to this key. There are use cases where this can be handy.</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">const</span> defaults = {
+  blogs: {
+    blog1: { <span class="hljs-comment">/* props here */</span> },
+    blog2: { <span class="hljs-comment">/* props here */</span> }
+  }
+}
+<span class="hljs-keyword">const</span> options = {
+  entrypoint: <span class="hljs-string">'blogs'</span>
+}
+</code></pre>
+				<p>Which would result in your store essentially being the following data structure, allowing your gets and sets to ignore the top level <strong>&quot;blogs&quot;</strong> property key.</p>
+				<pre><code class="lang-ts"><span class="hljs-comment">// Your store basically thinks or sees this even</span>
+<span class="hljs-comment">// though the entire structure is still present.</span>
+<span class="hljs-keyword">const</span> result = {
+    blog1: { <span class="hljs-comment">/* props here */</span> },
+    blog2: { <span class="hljs-comment">/* props here */</span> }
+}
+</code></pre>
+				<table>
+					<tr><td>Type</td><td>String</td></tr>
+					<tr><td>Default</td><td>null</td></tr>
+				</table>
+				<h3 id="encryptionkey">encryptionKey</h3>
+				<p>When an encryption key is specified it will encrypt your config. Since you are passing your encrypting key in plain text this doesn&#39;t secure the file however if the typical user were to open the config it deters them from making changes.</p>
+				<table>
+					<tr><td>Type</td><td>String</td></tr>
+					<tr><td>Default</td><td>null</td></tr>
+				</table>
+				<h3 id="transform">transform</h3>
+				<p>When data is loaded you can run the data through a transform which is useful for ensuring types. You must return a value.</p>
+				<pre><code class="lang-ts"><span class="hljs-comment">// IMPORTANT: your data structure may be different!!</span>
+
+<span class="hljs-comment">// Ensure date is of type Date.</span>
+<span class="hljs-keyword">const</span> options2 = {
+  transform: <span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> {
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> key <span class="hljs-keyword">in</span> v) {
+      <span class="hljs-keyword">if</span> (key === <span class="hljs-string">'date'</span> &amp;&amp; !(v[key] <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Date</span>))
+        v[key] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(v[key]);
+    }
+    <span class="hljs-keyword">return</span> v;
+  }
+}
+</code></pre>
+				<table>
+					<tr><td>Arguments</td><td>(key: string, value: any)</td></tr>
+					<tr><td>Returns</td><td>any</td></tr>
+				</table>
+				<h2 id="api">API</h2>
+				<h3 id="has">has</h3>
+				<p>Checks if config has a given property.</p>
+				<table>
+					<tr><td>Arguments</td><td>(key: string)</td></tr>
+					<tr><td>Returns</td><td>any</td></tr>
+				</table>
+				<h3 id="get">get</h3>
+				<p>Gets a value from the given by property path with optionally passing a default value to be set.</p>
+				<table>
+					<tr><td>Arguments</td><td>(key: string, def?: any)</td></tr>
+					<tr><td>Returns</td><td>any</td></tr>
+				</table>
+				<h3 id="set">set</h3>
+				<p>Sets a value by property path or iterates an object setting each property.</p>
+				<table>
+					<tr><td>Arguments</td><td>(key: string | object, value?: any)</td></tr>
+					<tr><td>Returns</td><td>KStor</td></tr>
+				</table>
+				<h3 id="del">del</h3>
+				<p>Deletes a key from the config.</p>
+				<table>
+					<tr><td>Arguments</td><td>(key: string)</td></tr>
+					<tr><td>Returns</td><td>KStor</td></tr>
+				</table>
+				<h3 id="clear">clear</h3>
+				<p>Clears the config to an empty object.</p>
+				<table>
+					<tr><td>Arguments</td><td>()</td></tr>
+					<tr><td>Returns</td><td>KStor</td></tr>
+				</table>
+				<h3 id="snapshot">snapshot</h3>
+				<p>Creates and returns a clone of your config.</p>
+				<table>
+					<tr><td>Arguments</td><td>()</td></tr>
+					<tr><td>Returns</td><td>object</td></tr>
+				</table>
+				<h3 id="query">query</h3>
+				<p>Using NoSQL type query syntax (think MongoDB), queries the config returning matching records. This is useful if you wish to use KStor as a simple in memory database. Please be advised it&#39;s limited but works well for what it does. MongoDB syntax should work for most use cases but not all operators are implemented.</p>
+				<p><strong>example</strong></p>
+				<p>Get users that are less than 25 years old but over 21. Skip the first 10 you find and include a total of 5.</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">const</span> q = { age: { $lt: <span class="hljs-number">25</span>, $gt: <span class="hljs-number">21</span> }};
+<span class="hljs-keyword">const</span> result = store.query(<span class="hljs-string">'users'</span>, q, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>);
+</code></pre>
+				<table>
+					<tr><td>Arguments</td><td>(key: string, query?: object, skip?: number, take?: number)</td></tr>
+					<tr><td>Returns</td><td>object</td></tr>
+				</table>
+				<h3 id="db-get-">db (get)</h3>
+				<p>Gets the entire config using getter.</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">const</span> data = <span class="hljs-keyword">this</span>.db;
+</code></pre>
+				<table>
+					<tr><td>Getter</td><td></td></tr>
+					<tr><td>Returns</td><td>object</td></tr>
+				</table>
+				<h3 id="db-set-">db (set)</h3>
+				<p>Sets the entire config using setter.</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">this</span>.db = { <span class="hljs-comment">/* your new object */</span> }
+</code></pre>
+				<table>
+					<tr><td>Setter</td><td></td></tr>
+					<tr><td>Returns</td><td>object</td></tr>
+				</table>
+				<h3 id="size">size</h3>
+				<p>Returns the size of the configuration.</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">const</span> defaults = {
+  name: <span class="hljs-string">'app'</span>,
+  description: <span class="hljs-string">'My application description.'</span>,
+  version: <span class="hljs-string">'1.0.0'</span>,
+  keywords: [
+    <span class="hljs-string">'todos'</span>,
+    <span class="hljs-string">'notes'</span>,
+    <span class="hljs-string">'messages'</span>
+  ],
+  author: {
+    name: <span class="hljs-string">'Milton Waddams'</span>,
+    email: <span class="hljs-string">'mwaddams@mail.com'</span>
+  }
+}
+
+<span class="hljs-comment">// In the above size would be 5</span>
+<span class="hljs-comment">// as it counts only the top</span>
+<span class="hljs-comment">// level keys.</span>
+<span class="hljs-keyword">const</span> size = store.size;
+</code></pre>
+				<table>
+					<tr><td>Getter</td><td></td></tr>
+					<tr><td>Returns</td><td>number</td></tr>
+				</table>
+				<h3 id="iterable">iterable</h3>
+				<p>Gets an iterable instance for performing forEach etc... See: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators</a></p>
+				<p>The <strong>KStor</strong> instance is also an iterable class, hence you can perform <strong>for of</strong> operations as well.</p>
+				<pre><code class="lang-ts"><span class="hljs-comment">// Consider this data structure.</span>
+<span class="hljs-keyword">const</span> teams = {
+  jets: { city: <span class="hljs-string">'New York'</span> },
+  eagles: { city: <span class="hljs-string">'Philadelphia'</span> },
+  patriots: { city: <span class="hljs-string">'New England'</span> }
+};
+
+<span class="hljs-keyword">for</span>(<span class="hljs-keyword">const</span> item of store) {
+  <span class="hljs-keyword">const</span> key = item.key <span class="hljs-comment">// this would be: jets, eagles, patriots.</span>
+  <span class="hljs-keyword">const</span> value = item.value <span class="hljs-comment">// would be each object ex: { city: 'New York' }</span>
+}
+
+<span class="hljs-comment">// OR</span>
+<span class="hljs-keyword">const</span> iterator = [...store];
+
+iterator.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">item</span>) </span>{
+  <span class="hljs-comment">// do something.</span>
+});
+</code></pre>
+				<table>
+					<tr><td>Getter</td><td></td></tr>
+					<tr><td>Returns</td><td>Iterable</td></tr>
+				</table>
+				<h2 id="change">Change</h2>
+				<p>See <a href="CHANGE.md">CHANGE.md</a></p>
+				<h2 id="license">License</h2>
+				<p>See <a href="LICENSE">LICENSE.md</a></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_debug_.html">"debug"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_.html">"interfaces"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_kstor_.html">"kstor"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_test_spec_.html">"test.spec"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

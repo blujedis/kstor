@@ -31,6 +31,9 @@ const store = new _1.KStor(options, defaults);
 //     { $or: [{ active: { $eq: true } }] }
 //   ]
 // });
-const result = store.query('blogs', { $and: [{ teams: { $gt: 30 } }, { teams: { $lt: 32 } }] });
+// const result = store.query('blogs', { $and: [{ teams: { $gt: 30 } }, { teams: { $lt: 32 } }] });
+for (const k of store) {
+    console.log(k);
+}
 store.clear();
 //# sourceMappingURL=debug.js.map

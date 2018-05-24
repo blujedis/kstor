@@ -50,7 +50,7 @@ class KStor extends events_1.EventEmitter {
         if (this.options.entrypoint)
             db = chek_1.get(db, this.options.entrypoint);
         for (const k of Object.keys(db)) {
-            yield { key: k, item: db[k] };
+            yield { key: k, value: db[k] };
         }
     }
     /**
@@ -345,7 +345,7 @@ class KStor extends events_1.EventEmitter {
      * @param value the current value to evaluate.
      */
     queryValue(operator, filter, value) {
-        if (chek_1.isDate(value))
+        if (chek_1.isDate(value)) // convert dates to epoch for comparing.
             value = value.getTime();
         if (chek_1.isDate(filter))
             filter = filter.getTime();
@@ -427,7 +427,7 @@ class KStor extends events_1.EventEmitter {
         const mergeNormalized = (key, obj, logical) => {
             if (!chek_1.isPlainObject(obj))
                 obj = { $eq: obj };
-            for (const k in obj) {
+            for (const k in obj) { // break out each operator to sep object.
                 const tmp = {
                     operator: k,
                     comparator: obj[k]
@@ -450,11 +450,11 @@ class KStor extends events_1.EventEmitter {
         const logicals = ['$and', '$or', '$nor'];
         for (const k in query) {
             const exps = query[k]; // [ { price: { $gt: 100 } }, ... ] or { $lt: 100 }
-            if (chek_1.contains(logicals, k)) {
+            if (chek_1.contains(logicals, k)) { // is logical.
                 if (!Array.isArray(exps))
                     throw new Error(`Logical query expected array but got type ${typeof exps}.`);
                 exps.forEach(exp => {
-                    if (exp.$and || exp.$or) {
+                    if (exp.$and || exp.$or) { // is nest $and, $or
                         mergeNested(this.queryNormalize(exp));
                     }
                     else {
@@ -496,11 +496,11 @@ class KStor extends events_1.EventEmitter {
                 const isOr = exp.logical === '$or';
                 const isNor = exp.logical === '$nor';
                 const isAnd = exp.logical === '$and';
-                if (isOr && validOr)
+                if (isOr && validOr) // already has match include in colleciton.
                     continue;
-                if (isAnd && validAnd === false)
+                if (isAnd && validAnd === false) // don't eval already failed exclude from collection.
                     continue;
-                if (isNor && validNor)
+                if (isNor && validNor) // already found valid nor match.
                     continue;
                 const value = chek_1.get(row, prop);
                 let isMatch = this.queryValue(exp.operator, exp.comparator, value);
@@ -540,18 +540,18 @@ class KStor extends events_1.EventEmitter {
         else {
             collection = key === '*' ? this._cache : this.get(key);
         }
-        if (!collection || !chek_1.isObject(collection))
+        if (!collection || !chek_1.isObject(collection)) // must be object.
             return result;
         let _skipped = 0;
         let _taken = 0;
-        for (const k in collection) {
+        for (const k in collection) { // iterate each row.
             if (chek_1.isValue(skip)) {
                 _skipped++;
-                if (_skipped <= skip)
+                if (_skipped <= skip) // skipping this row.
                     continue;
             }
             const row = collection[k];
-            if (!chek_1.isPlainObject(query)) {
+            if (!chek_1.isPlainObject(query)) { // return all rows less skip/take.
                 const tmp = {};
                 tmp[k] = row;
                 Object.assign(result, tmp);
@@ -566,7 +566,7 @@ class KStor extends events_1.EventEmitter {
                     _taken++;
                 }
             }
-            if (chek_1.isValue(take) && _taken >= take)
+            if (chek_1.isValue(take) && _taken >= take) // max records taken exit.
                 break;
         }
         return result;
@@ -591,8 +591,4 @@ class KStor extends events_1.EventEmitter {
     }
 }
 exports.KStor = KStor;
-function createStore(name, defaults, options) {
-    return new KStor(name, defaults, options);
-}
-exports.createStore = createStore;
 //# sourceMappingURL=kstor.js.map

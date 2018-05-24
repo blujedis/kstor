@@ -77,7 +77,7 @@ export class KStor<C> extends EventEmitter {
     if (this.options.entrypoint)
       db = get<any>(db, this.options.entrypoint);
     for (const k of Object.keys(db)) {
-      yield { key: k, item: db[k] };
+      yield { key: k, value: db[k] };
     }
   }
 
@@ -789,35 +789,5 @@ export class KStor<C> extends EventEmitter {
   }
 
 }
-
-/**
- * Create Store
- * Helper method which creates store of anonymous types.
- */
-export function createStore();
-
-/**
- * Create Store
- * Helper method which creates store of anonymous types.
- *
- * @param options configuration options.
- * @param defaults default values to populate the database with.
- */
-export function createStore(options: IKStoreOptions, defaults?: IMap<any>);
-
-/**
- * Create Store
- * Helper method which creates store of anonymous types.
- *
- * @param name the name to use for the filename when persisted.
- * @param defaults default values to populate the database with.
- * @param options configuration options.
- */
-export function createStore(name?: string, defaults?: IMap<any>, options?: IKStoreOptions);
-
-export function createStore(name?: string | IKStoreOptions, defaults?: IMap<any>, options?: IKStoreOptions): KStor<any> {
-  return new KStor<any>(name, defaults, options);
-}
-
 
 

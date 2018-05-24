@@ -17,7 +17,7 @@ export declare class KStor<C> extends EventEmitter {
      */
     [Symbol.iterator](): IterableIterator<{
         key: string;
-        item: any;
+        value: any;
     }>;
     /**
      * Exit Handler
@@ -69,7 +69,7 @@ export declare class KStor<C> extends EventEmitter {
      */
     readonly iterable: {
         key: string;
-        item: any;
+        value: any;
     }[];
     /**
      * Size
@@ -170,25 +170,3 @@ export declare class KStor<C> extends EventEmitter {
      */
     snapshot(): C;
 }
-/**
- * Create Store
- * Helper method which creates store of anonymous types.
- */
-export declare function createStore(): any;
-/**
- * Create Store
- * Helper method which creates store of anonymous types.
- *
- * @param options configuration options.
- * @param defaults default values to populate the database with.
- */
-export declare function createStore(options: IKStoreOptions, defaults?: IMap<any>): any;
-/**
- * Create Store
- * Helper method which creates store of anonymous types.
- *
- * @param name the name to use for the filename when persisted.
- * @param defaults default values to populate the database with.
- * @param options configuration options.
- */
-export declare function createStore(name?: string, defaults?: IMap<any>, options?: IKStoreOptions): any;

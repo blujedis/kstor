@@ -36,8 +36,11 @@ const store = new KStor(options, defaults);
 // });
 
 
-const result = store.query('blogs', { $and: [{ teams: { $gt: 30 } }, { teams: { $lt: 32 } }] });
+// const result = store.query('blogs', { $and: [{ teams: { $gt: 30 } }, { teams: { $lt: 32 } }] });
 
+for (const k of store) {
+  console.log(k);
+}
 
 store.clear();
 

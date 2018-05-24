@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import * as mocha from 'mocha';
-import { KStor, createStore } from './';
+import { KStor } from './';
 import { homedir } from 'os';
 
 const expect = chai.expect;
