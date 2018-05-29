@@ -111,12 +111,15 @@ store.set(<span class="hljs-string">'version'</span>, <span class="hljs-string">
 				<p>The storage path for your config is very flexible. Here are the majority of examples you might encounter.</p>
 				<p><strong>APP_NAME</strong> denotes the directory name of your module or the package.json name of your module.
 				<strong>HOME</strong> denotes the home directory for your system. For example on mac /Users/YOUR_NAME.</p>
-				<p><strong>name:</strong> undefined <strong>dir:</strong> undefined <strong>result:</strong> /$HOME/.kstor/APP_NAME/config.json
-					<strong>name:</strong> custom <strong>dir:</strong> undefined <strong>result:</strong> /$HOME/.kstor/APP_NAME/custom.json
-					<strong>name:</strong> .customrc <strong>dir:</strong> undefined <strong>result:</strong> /$HOME/.kstor/APP_NAME/.customrc
-					<strong>name:</strong> mydir/conf.json <strong>dir:</strong> undefined <strong>result:</strong> /$HOME/.kstor/mydir/conf.json
-					<strong>name:</strong> conf.json <strong>dir:</strong> ./.configs <strong>result:</strong> ./.configs/conf.json (basically relative to local dir)
-				<strong>name:</strong> conf.json <strong>dir:</strong> /absolute/path <strong>result:</strong> /absolute/path/conf.json</p>
+				<table>
+					<tr><td>Name</td><td>Directory</td><td>Result</td></tr>
+					<tr><td>undefined</td><td>undefined</td><td>/$HOME/.kstor/APP_NAME/config.json</td></tr>
+					<tr><td>custom</td><td>undefined</td><td>/$HOME/.kstor/APP_NAME/custom.json</td></tr>
+					<tr><td>.customrc</td><td>undefined</td><td>/$HOME/.kstor/APP_NAME/.customrc</td></tr>
+					<tr><td>mydir/conf.json</td><td>undefined</td><td>/$HOME/.kstor/mydir/conf.json</td></tr>
+					<tr><td>conf.json</td><td>./.configs</td><td>./.configs/conf.json (basically relative to local dir)</td></tr>
+					<tr><td>conf.json</td><td>/absolute/path</td><td>/absolute/path/conf.json</td></tr>
+				</table>
 				<h2 id="options">Options</h2>
 				<p>For most use cases you will not need to set any options. By default the <strong>&quot;name&quot;</strong> and <strong>&quot;dir&quot;</strong> options are set automatically. When &quot;dir&quot; is specified the default directory is overriden.</p>
 				<p>By default configs are saved to <strong>&quot;$HOME/kstor/configs&quot;</strong>. The file name will be your specified <strong>&quot;name&quot;</strong> option or the name of the directory from which you instantiated.</p>

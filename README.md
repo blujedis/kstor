@@ -57,12 +57,15 @@ The storage path for your config is very flexible. Here are the majority of exam
 **APP_NAME** denotes the directory name of your module or the package.json name of your module.
 **HOME** denotes the home directory for your system. For example on mac /Users/YOUR_NAME.
 
-**name:** undefined **dir:** undefined **result:** /$HOME/.kstor/APP_NAME/config.json
-**name:** custom **dir:** undefined **result:** /$HOME/.kstor/APP_NAME/custom.json
-**name:** .customrc **dir:** undefined **result:** /$HOME/.kstor/APP_NAME/.customrc
-**name:** mydir/conf.json **dir:** undefined **result:** /$HOME/.kstor/mydir/conf.json
-**name:** conf.json **dir:** ./.configs **result:** ./.configs/conf.json (basically relative to local dir)
-**name:** conf.json **dir:** /absolute/path **result:** /absolute/path/conf.json
+<table>
+  <tr><td>Name</td><td>Directory</td><td>Result</td></tr>
+  <tr><td>undefined</td><td>undefined</td><td>/$HOME/.kstor/APP_NAME/config.json</td></tr>
+  <tr><td>custom</td><td>undefined</td><td>/$HOME/.kstor/APP_NAME/custom.json</td></tr>
+  <tr><td>.customrc</td><td>undefined</td><td>/$HOME/.kstor/APP_NAME/.customrc</td></tr>
+  <tr><td>mydir/conf.json</td><td>undefined</td><td>/$HOME/.kstor/mydir/conf.json</td></tr>
+  <tr><td>conf.json</td><td>./.configs</td><td>./.configs/conf.json (basically relative to local dir)</td></tr>
+  <tr><td>conf.json</td><td>/absolute/path</td><td>/absolute/path/conf.json</td></tr>
+</table>
 
 ## Options
 

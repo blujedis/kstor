@@ -2,10 +2,6 @@
 
 export type KStorTransform = (key: string, value: any) => any;
 
-// TODO: create types/interfaces
-// for query constratins.
-export type KStorOperatorsGroup =
-  '$eq' | '$gt' | 'gte' | '$lt' | '$lte' | '$ne' | '$not' | '$in' | '$nin' | '$exists' | '$like' | '$regexp' | '$set' | '$and' | '$or' | '$nor';
 
 export interface IMap<T> {
   [key: string]: T;
