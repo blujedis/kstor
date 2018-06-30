@@ -1,6 +1,6 @@
 {
   "name": "kstor",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Simple key value storage.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/origin1tech/kstor.git"
+    "url": "git+https://github.com/blujedis/kstor.git"
   },
   "build": {
     "clean": [
@@ -51,12 +51,12 @@
     "instrument": true
   },
   "keywords": [],
-  "author": "Origin1 Technologies <origin1tech@gmail.com>",
+  "author": "Blu Jedi <blujedicorp@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/origin1tech/kstor/issues"
+    "url": "https://github.com/blujedis/kstor/issues"
   },
-  "homepage": "https://github.com/origin1tech/kstor#readme",
+  "homepage": "https://github.com/blujedis/kstor#readme",
   "devDependencies": {
     "@types/chai": "^4.1.3",
     "@types/graceful-fs": "^4.1.2",

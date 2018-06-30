@@ -110,7 +110,7 @@ export class KStor<C> extends EventEmitter {
         return handleExit();
       if (type === 'error')
         throw codeOrErr;
-      process.exit(codeOrErr);
+      // process.exit(codeOrErr);
     };
 
     handleExit();

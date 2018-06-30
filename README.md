@@ -303,7 +303,7 @@ iterator.forEach(function(item) {
 
 ## Docs
 
-See [https://origin1tech.github.io/kstor/](https://origin1tech.github.io/kstor/)
+See [https://blujedis.github.io/kstor/](https://blujedis.github.io/kstor/)
 
 ## Change
 
