@@ -28,27 +28,27 @@ export declare class KStor<C> extends EventEmitter {
      * @param type the type of exit.
      * @param codeOrErr the code or error upon exit.
      */
-    private exitHandler(type, codeOrErr);
-    private createHash();
+    private exitHandler;
+    private createHash;
     /**
      * Ensure Dir
      * Ensures the directory exists.
      */
-    private ensureDir();
+    private ensureDir;
     /**
      * Normalize Key
      * Normalizes key prefixing with superkey if exists.
      *
      * @param key the key to be normalized.
      */
-    private normalizeKey(key);
+    private normalizeKey;
     /**
      * Has Listener
      * Checks if the Event Emitter contains a listener for the given key.
      *
      * @param key the key to inspect eventNames for.
      */
-    private hasListener(key);
+    private hasListener;
     /**
      * Ensure Default
      * Ensures a default value.
@@ -56,14 +56,14 @@ export declare class KStor<C> extends EventEmitter {
      * @param val the value to be inpsected.
      * @param def the default value if val is undefined.
      */
-    private ensureDefault(val, def?);
+    private ensureDefault;
     /**
      * Transform
      * Runs transform from options.
      *
      * @param data the data to be transformed.
      */
-    private transform(data);
+    private transform;
     db: C;
     /**
      * For Each
@@ -84,7 +84,7 @@ export declare class KStor<C> extends EventEmitter {
      *
      * @param options options to be used for generating path.
      */
-    private getPath(options?);
+    private getPath;
     /**
      * Defaults
      * Ensures defaults in store.

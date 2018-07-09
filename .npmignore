@@ -8,5 +8,8 @@ test.html
 .vscode/
 tslint.json
 typedoc.json
-src/
 build/
+dist/test*
+dist/debug*
+wercker.yml
+.nyc_output

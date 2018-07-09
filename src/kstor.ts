@@ -6,8 +6,8 @@ import * as makedir from 'make-dir';
 import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { basename, parse, resolve, join, dirname } from 'path';
-import { get, set, del, has, isPlainObject, isBoolean, isString, isError, clone, isFunction, isValue, keys, containsAny, isObject, isBuffer, isUndefined, isRegExp, isEmpty, toArray, toMap, isDate, isSymbol, contains, extend, tryWrap } from 'chek';
-import { IMap, IKStoreOptions, KStorIterable } from './';
+import { get, set, del, has, isPlainObject, clone, isFunction, isValue, isUndefined, tryWrap } from 'chek';
+import { IMap, IKStoreOptions } from './';
 
 
 const ENCRYPTION_ALGORITHIM = 'aes-256-cbc';

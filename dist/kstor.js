@@ -77,7 +77,7 @@ class KStor extends events_1.EventEmitter {
                 return handleExit();
             if (type === 'error')
                 throw codeOrErr;
-            process.exit(codeOrErr);
+            // process.exit(codeOrErr);
         };
         handleExit();
     }

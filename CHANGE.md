@@ -2,6 +2,12 @@
 
 List of changes in descending order.
 
+### 7.9.2018 (v1.0.7)
+
+<table>
+  <tr><td>.npmignore</td><td>update npmginore.</td></tr>
+</table>
+
 ### 5.30.2018 (v1.0.3-v1.0.5)
 
 <table>
