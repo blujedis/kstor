@@ -2,7 +2,13 @@
 
 List of changes in descending order.
 
-### 7.9.2018 (v1.0.7)
+### 8.26.2018 (v1.0.9)
+
+<table>
+  <tr><td>.get()</td><td>default value was not passed for setting default values on get request.</td></tr>
+</table>
+
+### 7.9.2018 (v1.0.8)
 
 <table>
   <tr><td>.npmignore</td><td>update npmginore.</td></tr>

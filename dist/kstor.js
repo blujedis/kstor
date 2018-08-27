@@ -301,14 +301,13 @@ class KStor extends events_1.EventEmitter {
         return chek_1.has(this.db, this.normalizeKey(key));
     }
     /**
-     * Get
-     * : Gets value for the provided key.
+     * Gets value for the provided key.
      *
      * @param key the key for looking up store value.
      * @param def a default value.
      */
     get(key, def) {
-        return chek_1.get(this.db, this.normalizeKey(key));
+        return chek_1.get(this.db, this.normalizeKey(key), def);
     }
     /**
      * Set

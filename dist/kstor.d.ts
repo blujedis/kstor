@@ -100,8 +100,7 @@ export declare class KStor<C> extends EventEmitter {
      */
     has(key: string): boolean;
     /**
-     * Get
-     * : Gets value for the provided key.
+     * Gets value for the provided key.
      *
      * @param key the key for looking up store value.
      * @param def a default value.
