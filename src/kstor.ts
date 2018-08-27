@@ -414,7 +414,14 @@ export class KStor<C> extends EventEmitter {
    * @param def a default value.
    */
   get<T>(key: string, def?: any): T {
-    return get<T>(this.db, this.normalizeKey(key), def);
+    const result = get<T>(this.db, this.normalizeKey(key));
+    if (isValue(result))
+      return result;
+    if (isValue(def)) {
+      this.set(key, def);
+      return def;
+    }
+    return undefined;
   }
 
   /**

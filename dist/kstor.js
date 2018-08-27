@@ -307,7 +307,14 @@ class KStor extends events_1.EventEmitter {
      * @param def a default value.
      */
     get(key, def) {
-        return chek_1.get(this.db, this.normalizeKey(key), def);
+        const result = chek_1.get(this.db, this.normalizeKey(key));
+        if (chek_1.isValue(result))
+            return result;
+        if (chek_1.isValue(def)) {
+            this.set(key, def);
+            return def;
+        }
+        return undefined;
     }
     /**
      * Set
